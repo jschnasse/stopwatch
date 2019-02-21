@@ -52,24 +52,19 @@ function readCommand(){
         then
  		printf "\n"
 		return $PAUSE_STATE;
-        fi
-	if [[ $c == $RESET_COMMAND ]]
+        elif [[ $c == $RESET_COMMAND ]]
         then
 		printf "\n"
 		return $RESET_STATE;
         fi
-   fi  
-
-   if [[ $STATE == $PAUSE_STATE ]]
+   elif [[ $STATE == $PAUSE_STATE ]]
    then
         if [[ $c == $RUN_COMMAND ]]
         then
 		printf "\n"
 		return $RUN_STATE;
         fi
-   fi  
-
-   if [[ $STATE == $RESET_STATE ]]
+   elif [[ $STATE == $RESET_STATE ]]
    then
         if [[ $c == $RESET_COMMAND ]]
         then
@@ -93,14 +88,10 @@ function main(){
 	   if [[ $STATE == $PAUSE_STATE ]]
 	   then
 	      pause
-	   fi
-
-	   if [[ $STATE == $RUN_STATE ]]
+	   elif [[ $STATE == $RUN_STATE ]]
 	   then  
 	     run
-	   fi
-
-	   if [[ $STATE == $RESET_STATE ]]
+	   elif [[ $STATE == $RESET_STATE ]]
 	   then
 	      reset  
 	   fi
