@@ -1,0 +1,121 @@
+#!/bin/bash 
+# title: stopwatch
+# author: Jan Schnasse
+# license: GNU AGPL https://www.gnu.org/licenses/agpl.html
+
+STATE=
+DATE_FORMAT=+%s%N
+RUN_STATE=1
+PAUSE_STATE=2
+RESET_STATE=3
+
+RUN_COMMAND=p
+RESET_COMMAND=r
+
+STOP_TIME=0
+CURRENT_TIME=0
+TIME_INDEX=0
+
+function setCurrentTime(){
+   CURRENT_TIME=$(date +$DATE_FORMAT)
+}
+
+
+printNano() {
+    input="$1"
+    secs=$(printf "%1d\n" ${input: 0 : -9})
+    nanos=${input: -9 : 9 }
+    printf '\r%s' $(TZ=UTC date -d@$secs.$nanos +%H:%M:%S.%N)
+}
+
+function run(){
+   STOP_TIME=$(( CURRENT_TIME - TIME_INDEX))
+   printNano $STOP_TIME
+}
+
+function reset(){
+   setCurrentTime
+   TIME_INDEX=$CURRENT_TIME
+}
+
+function pause(){
+   reset
+   TIME_INDEX=$(( $TIME_INDEX - $STOP_TIME ))
+}
+
+function readCommand(){
+   lastState=$1
+   read -s -t.1 -n1 c;
+   if [[ $STATE == $RUN_STATE ]]
+   then
+        if [[ $c == $RUN_COMMAND ]]
+        then
+ 		printf "\n"
+		return $PAUSE_STATE;
+        fi
+	if [[ $c == $RESET_COMMAND ]]
+        then
+		printf "\n"
+		return $RESET_STATE;
+        fi
+   fi  
+
+   if [[ $STATE == $PAUSE_STATE ]]
+   then
+        if [[ $c == $RUN_COMMAND ]]
+        then
+		printf "\n"
+		return $RUN_STATE;
+        fi
+   fi  
+
+   if [[ $STATE == $RESET_STATE ]]
+   then
+        if [[ $c == $RESET_COMMAND ]]
+        then
+		printf "\n"
+		return $RUN_STATE;
+        fi
+   fi  
+
+   return $lastState;
+}
+
+function resetWatch(){
+   setCurrentTime
+   TIME_INDEX=$CURRENT_TIME
+}
+
+
+function main(){
+	STATE=$RESET_STATE
+        printf "Start / Reset with: \t%s\n" $RESET_COMMAND
+        printf "Pause/Unpause with: \t%s\n" $RUN_COMMAND
+
+	while : 
+	do 
+	   setCurrentTime
+
+	   if [[ $STATE == $PAUSE_STATE ]]
+	   then
+	      pause
+	   fi
+
+	   if [[ $STATE == $RUN_STATE ]]
+	   then  
+	     run
+	   fi
+
+	   if [[ $STATE == $RESET_STATE ]]
+	   then
+	      reset  
+	   fi
+
+	   readCommand $STATE
+	   STATE=$?
+
+	   sleep .1
+	done 
+}
+
+main
