@@ -3,7 +3,7 @@
 # author: Jan Schnasse
 # license: GNU AGPL https://www.gnu.org/licenses/agpl.html
 
-STATE=
+STATE=3
 DATE_FORMAT=+%s%N
 RUN_STATE=1
 PAUSE_STATE=2
@@ -21,7 +21,7 @@ function setCurrentTime(){
 }
 
 
-printNano() {
+function printNano() {
     input="$1"
     secs=$(printf "%1d\n" ${input: 0 : -9})
     nanos=${input: -9 : 9 }
@@ -80,12 +80,6 @@ function readCommand(){
 
    return $lastState;
 }
-
-function resetWatch(){
-   setCurrentTime
-   TIME_INDEX=$CURRENT_TIME
-}
-
 
 function main(){
 	STATE=$RESET_STATE
