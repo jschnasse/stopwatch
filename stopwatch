@@ -72,7 +72,6 @@ function readCommand(){
 		return $RUN_STATE;
         fi
    fi  
-
    return $lastState;
 }
 
@@ -80,11 +79,9 @@ function main(){
 	STATE=$RESET_STATE
         printf "Start / Reset with: \t%s\n" $RESET_COMMAND
         printf "Pause/Unpause with: \t%s\n" $RUN_COMMAND
-
 	while : 
 	do 
 	   setCurrentTime
-
 	   if [[ $STATE == $PAUSE_STATE ]]
 	   then
 	      pause
@@ -95,10 +92,8 @@ function main(){
 	   then
 	      reset  
 	   fi
-
 	   readCommand $STATE
 	   STATE=$?
-
 	   sleep .1
 	done 
 }
